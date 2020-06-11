@@ -68,7 +68,8 @@ export default class Signup extends Component{
         return(
             <div className={styles.centerMe}>
                 <form onSubmit={this.handleSubmit}>
-                    <h1>Sign Up to <Link to={'/'}>Boulder Babes</Link> </h1>
+                    <h1>Sign Up to <Link to={'/'}>Boulders</Link> </h1>
+
                 </form>
                 <footer className={'pt-5'}>
                     <div className={'container text-center'}>
