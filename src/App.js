@@ -6,14 +6,15 @@ import {
     Redirect
 } from "react-router-dom";
 import Home from './pages/Home';
-import Signup from './pages/Signup';
+import SignUp from './pages/Signup';
 import Login from './pages/Login';
-import createUsername from './pages/CreateUsername';
 import Landing from './pages/Landing';
 import { auth } from './services/firebase';
 import {LoadingOutlined} from '@ant-design/icons';
+import boulderProblem from "./images/boulderProblem.jpg";
+import './styles.css';
 
-function PrivateRoute({component: Component, authenticated, ...rest}) {
+export function PrivateRoute({component: Component, authenticated, ...rest}) {
     return (
         <Route
     {...rest}
@@ -25,12 +26,13 @@ function PrivateRoute({component: Component, authenticated, ...rest}) {
 }
 
 function PublicRoute({ component: Component, authenticated, ...rest}){
+    console.log(authenticated);
     return(
         <Route
     {...rest}
     render={(props) => authenticated === false
         ? <Component {...props}/>
-: <Redirect to={'/Home'}/>
+: <Redirect to={'/home'}/>
 }
     />
 );
@@ -60,34 +62,37 @@ export default class App extends Component{
             }
         });
     }
+
+
     render(){
+
         return this.state.loading === true ?
-            (<div>
-            <h1 style={{margin:'auto'}}>
-    <LoadingOutlined spin={true}/> Loading...
-        </h1>
-        </div>) :(
-        <Router>
-        <Switch>
-        <Route exact path='/' component={Landing}/>
-        <PrivateRoute path={'/CreateUsername'}
-        authenticated={this.state.authenticated}
-        component={createUsername}
-        />
-        <PrivateRoute path={'/Home'}
-        authenticated={this.state.authenticated}
-        component={Home}
-        />
-        <PublicRoute path={'/login'}
-        authenticated={this.state.authenticated}
-        component={Login}
-        />
-        <PublicRoute path={'/signup'}
-        authenticated={this.state.authenticated}
-        component={Signup}
-        />
-        </Switch>
-        </Router>
-    );
+            (<div className='loadingContainer'>
+                <h1>
+                    <LoadingOutlined spin={true}/> Loading...
+                </h1>
+
+            </div>)
+            :(
+                <div style={{textAlign: 'center', backgroundImage:`url(${boulderProblem})`}}>
+                    <Router>
+                        <Switch>
+                            <Route exact path='/' component={Landing}/>
+                            <PrivateRoute path='/Home'
+                            authenticated={this.state.authenticated}
+                            component={Home}
+                            />
+                            <PublicRoute path='/login'
+                            authenticated={this.state.authenticated}
+                            component={Login}
+                            />
+                            <PublicRoute path='/signup'
+                            authenticated={this.state.authenticated}
+                            component={SignUp}
+                            />
+                        </Switch>
+                    </Router>
+                </div>
+            );
     }
 }

@@ -7,20 +7,21 @@ import styles from "../styles.css";
 export default class Landing extends Component{
     render(){
         return (
+            <div>
             <div className={styles.centerMe}>
                 <section>
                     <h1>
                         Welcome to Boulder Babes
                     </h1>
                     <p>hello world</p>
-                    <Link to={'/signup'}>
+                    <Link to={'/Signup'}>
                         <Button type={'primary'} shape={'round'}>
                             Create New Account
                         </Button>
                     </Link>
                     <br/>
                     <br/>
-                    <Link to={'/login'}>
+                    <Link to={'/Login'}>
                         <Button type={'primary'} shape={'round'}>
                             Login to Your Account
                         </Button>
@@ -31,6 +32,7 @@ export default class Landing extends Component{
                         <p>&copy; Boulder Babes 2020</p>
                     </div>
                 </footer>
+            </div>
             </div>
         );
     }
