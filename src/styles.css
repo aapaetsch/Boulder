@@ -61,11 +61,12 @@ body {
     }
 }
 
-.centerMe {
+.formatText {
     text-align: center;
     display: inline-block;
 }
-.loadingContainer {
+
+.centerMe {
     position: absolute;
     top: 50%;
     left: 50%;

@@ -1,34 +1,31 @@
 import React, { Component } from 'react';
-import { Layout, Menu, Avatar, Badge, message } from 'antd';
-import { auth} from '../services/firebase';
-import { getUser, createUser } from '../services/firestore';
-import {  UserOutlined, ImportOutlined, MessageOutlined, BellOutlined} from '@ant-design/icons';
+import { message, Row, Col } from 'antd';
+import { auth } from '../services/firebase';
+import {getUser, createUser, updateUserProfile} from '../services/firestore';
 import ProfilePage from "./usrprofile/ProfilePage";
 import Messages from "./messages/Messages";
-const { Header, Footer, Content} = Layout;
+import MenuBar from "../components/Menubar";
 
 export default class Home extends Component{
     constructor(props) {
         super(props);
         this.state = {
             selected: 'profile',
-            userProfile: {
-                name: 'null',
-                usrName: 'null',
-                location: 'undefined',
-                creationDate: 'null',
-                followers: 0,
-                following: 0,
-                photo: 'null',
-                skill: 'null',
-                posts: [],
-                chatThreads: [],
-            }
 
+            name: 'null',
+            usrName: 'null',
+            location: 'unknown',
+            creationDate: 'null',
+            followers: [],
+            following: [],
+            photo: 'null',
+            skill: 'null',
+            posts: [],
 
         }
         this.handleMenuClick = this.handleMenuClick.bind(this);
         this.loadUser = this.loadUser.bind(this);
+        this.editUserProfile = this.editUserProfile.bind(this);
     }
 
     handleMenuClick = e =>{
@@ -36,17 +33,37 @@ export default class Home extends Component{
         this.setState({
             selected: e.key
         });
-        this.forceUpdate();
     }
 
-
-    componentWillMount() {
+    componentDidMount(){
         this.loadUser(auth().currentUser.uid)
             .then((result) => {if (result === false){auth().signOut()}});
     }
 
+    async editUserProfile(values){
+        if (values.skill !== this.state.skill ||
+            values.location !== this.state.location ||
+            values.usrName !== this.state.usrName ||
+            values.name !== this.state.name) {
+            const didUpdate = await updateUserProfile(values, auth().currentUser.uid);
+            if (didUpdate) {
+                this.setState({
+                    skill: values.skill,
+                    usrName: values.usrName,
+                    location: values.location,
+                    name: values.name,
+                });
+                message.success('Successfully updated account.');
+                return false;
+            } else {
+                message.error('Error updating account.');
+                return true;
+            }
+        }
+    }
 
     async loadUser(uid) {
+        console.log('names');
         const user = await getUser(uid);
 
         if (user === false){
@@ -59,32 +76,53 @@ export default class Home extends Component{
             } else {
                 console.log('User created',newUser);
                 message.success('User Created Successfully!');
-                await this.setState({
-                    userProfile: newUser,
-                })
+                await this.setUserProfile(user);
                 return true;
             }
         } else {
             //If the user exists
             console.log('user found', user);
             message.success( 'Logged in as '+ user.usrName);
-            await this.setState({
-               userProfile: user,
-            });
+            await this.setUserProfile(user);
             return true;
         }
+    }
+
+    async setUserProfile(user){
+        await this.setState({
+            name: user.name,
+            usrName: user.usrName,
+            location: user.location,
+            creationDate: user.creationDate,
+            followers: user.followers,
+            following: user.following,
+            photo: user.photo,
+            skill: user.skill,
+            posts: user.posts,
+        });
     }
 
     renderSwitch(content){
         switch (content){
             case 'profile':
-                return <ProfilePage myProfile={true} profile={this.state.userProfile}/>;
+                return <ProfilePage
+                    myProfile={true}
+                    name={this.state.name}
+                    usrName={this.state.usrName}
+                    skill={this.state.skill}
+                    photo={this.state.photo}
+                    location={this.state.location}
+                    followers={this.state.followers}
+                    following={this.state.following}
+                    posts={this.state.posts}
+                    creationDate={this.state.creationDate}
+                    editUserProfile={this.editUserProfile}
+                    />;
             case 'messages':
-                return <Messages profile={this.state.userProfile}/>;
+                return <Messages photo={this.state.photo}/>;
             default:
-                return <p> hello world</p>;
+                return <p>hello world!</p>;
         }
-
     }
 
 
@@ -92,60 +130,26 @@ export default class Home extends Component{
     render(){
         return (
             <div>
-
-                <Layout>
-                    <Header theme='light'>
-
-                        <Menu
-                            onClick={this.handleMenuClick}
-                            theme='light'
-                            selectedKeys={this.state.selected}
-                            mode='horizontal'>
-                            <Menu.Item
-                                key='home'
-                                title='Home'>
-                                <h2>Boulders</h2>
-                            </Menu.Item>
-                            <Menu.Item
-                                key='profile'
-                                title='Profile'>
-                                <Avatar icon={<UserOutlined/>} src={this.state.userProfile.photo}/>
-                                &nbsp;{this.state.userProfile.usrName}
-                            </Menu.Item>
-                            <Menu.Item
-                                key='messages'
-                                title='Messages'>
-                                <Badge
-                                    count={0}
-                                    showZero
-                                    title='Messages'>
-                                    <MessageOutlined/>
-                                </Badge>
-                            </Menu.Item>
-                            <Menu.Item
-                                key='notifications'
-                                title='Notifications'
-                                icon={<BellOutlined/>}>
-
-                            </Menu.Item>
-                            <Menu.Item
-                                onClick={() => auth().signOut()}
-                                key='logout'
-                                title='Logout'
-                                icon={<ImportOutlined/>}/>
-                        </Menu>
-                    </Header>
-                    <br/><br/><br/>
-                    <Content theme={'light'}>
-
+                {/*menu Bar*/}
+                <Row justify="center">
+                    <Col span={20}>
+                        <MenuBar
+                            photo={this.state.photo}
+                            usrName={this.state.usrName}
+                            selected={this.state.selected}
+                            handleMenuClick={this.handleMenuClick}/>
+                    </Col>
+                </Row>
+                {/*Main Content*/}
+                <Row>
+                    <Col span={24}>
                         {this.renderSwitch(this.state.selected)}
+                    </Col>
+                </Row>
+                {/*Footer Content*/}
+                <Row>
 
-                    </Content>
-                    <Footer theme={'light'}>
-
-                    </Footer>
-                </Layout>
-
+                </Row>
             </div>
         );
     }

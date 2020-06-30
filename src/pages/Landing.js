@@ -2,13 +2,12 @@ import React, { Component } from "react";
 import { Link } from 'react-router-dom';
 import { Button } from 'antd';
 
-import styles from "../styles.css";
+import "../styles.css";
 
 export default class Landing extends Component{
     render(){
         return (
-            <div>
-            <div className={styles.centerMe}>
+            <div className='centerMe formatText'>
                 <section>
                     <h1>
                         Welcome to Boulder Babes
@@ -33,7 +32,7 @@ export default class Landing extends Component{
                     </div>
                 </footer>
             </div>
-            </div>
+
         );
     }
 }

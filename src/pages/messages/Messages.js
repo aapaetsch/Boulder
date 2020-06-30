@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { List, Avatar, Layout, Button, message } from 'antd';
+import { List, Avatar,
+        Button, message, Row,
+        Col, Divider, Input } from 'antd';
 import { SendOutlined } from '@ant-design/icons';
 import { auth, realTime, db } from "../../services/firebase";
 import Chats from '../messages/Chats';
-const {Header, Content, Sider} = Layout;
 
 export default class Messages extends Component{
     constructor(props){
@@ -17,67 +18,85 @@ export default class Messages extends Component{
 
     componentWillMount(){
         //get the chats
-        let threads = this.props.profile.chatThreads;
-        try{
-            realTime.ref('chats').on('value', snapshot =>{
-                let activeThreads = [];
-                snapshot.forEach((snap) => {
-                    if (snap.val() in threads){
-                        activeThreads.push(snap.val().from);
-                    }
-                });
-                this.setState({
-                    threads: activeThreads,
-                });
-            });
-        } catch(error){
-            this.setState({
-                readError: error.message,
-            });
-            message.error(error.message);
-        }
+
     }
 
 
     render(){
         return (
-            //user search bar //new chat
-
-            //list of all threads, can be clicked on
-            <Layout>
-                <Sider theme='light'
-                       width='25%'>
-                    <div style={{display: 'inline-block'}}>
+            <div>
+                <Row justify='center'>
+                    <Col span={6}>
+                        {/*Chat Threads Container*/}
                         <br/>
-                        <span>
-                        <Avatar src={this.props.profile.photo} size={64}/>
-                        <h2>&nbsp;&nbsp;Chat</h2>
-                        <Button icon={<SendOutlined/>}
-                                onClick={() => console.log('click')}/></span>
-                    </div>
-                    <List
-                        itemLayout='horizontal'
-                        dataSource={this.state.threads}
-                        bordered={true}
-                        renderItem={item => (
-                            <List.Item>
-                                <List.Item.Meta
-                                    title={item.title}/>
-                            </List.Item>
-                        )}>
+                        <Row align='bottom'>
+                            <Col span={8}>
+                                <Avatar
+                                    src={this.props.photo}
+                                    size={64}/>
+                            </Col>
+                            <Col span={8}>
+                                <b style={{fontSize:'20px'}}>Chat</b>
+                            </Col>
+                            <Col span={8}>
+                                <Button
+                                    icon={<SendOutlined/>}
+                                    onClick={() => console.log('click')}/>
+                            </Col>
+                        </Row>
+                        <Divider/>
+                        <List
+                            itemLayout='horizontal'
+                            datasource={this.state.threads}
+                            bordered={true}
+                            renderItem={
+                                item => (
+                                    <List.Item>
+                                       <List.Item.Meta
+                                            title={item.title}
+                                       />
+                                    </List.Item>
+                                )}>
+                        </List>
+                    </Col>
+                    <Col span={1}/>
+                    {/*Messages Container*/}
+                    <Col span={13}>
+                        <br/>
+                        <Row align='bottom'>
+                            <Col span={24}>
+                                <List
+                                    itemLayout='horizontal'
+                                    bordered={true}
+                                    renderItem={
+                                        item => (
+                                         <List.Item>
+                                             <List.Item.Meta
+                                                 title={item.title}
+                                             />
+                                         </List.Item>
+                                        )}>
+                                </List>
+                            </Col>
+                        </Row>
+                        <Row align='bottom'>
+                            <br/><br/>
+                            <Col span={18}>
+                                <Input placeholder='Type A Message'/>
+                            </Col>
+                            <Col span={4} justify='right'>
+                                <Button
+                                    type='primary'>
+                                    Send
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Col>
+                </Row>
 
-                    </List>
-                </Sider>
-                <Layout>
-                <Header>
 
-                </Header>
-                <Content>
-                    <Chats />
 
-                </Content>
-                </Layout>
-            </Layout>
+            </div>
 
         );
     }

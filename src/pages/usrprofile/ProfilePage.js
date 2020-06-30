@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import { Layout, Avatar, Button, Tooltip, Descriptions, Drawer } from 'antd';
+import { Layout, Avatar, Button,
+        Tooltip, Descriptions, Drawer,
+        Row, Col, Divider, Modal } from 'antd';
 import { UserOutlined } from '@ant-design/icons';
 import EditProfile from './EditProfile';
 import './usrprofile.css';
 import { auth } from 'firebase';
-
-const { Header, Footer, Sider, Content } = Layout;
+import AvatarEditor from "../../components/AvatarEditor";
 
 export default class ProfilePage extends Component {
     constructor(props){
@@ -13,12 +14,14 @@ export default class ProfilePage extends Component {
         this.state = {
             profilePic: null,
             userName: null,
-            profileDrawer: false
+            profileDrawer: false,
+            editAvatar: false,
         }
 
         this.closeProfileEdit = this.closeProfileEdit.bind(this);
         this.openProfileEdit = this.openProfileEdit.bind(this);
-
+        this.openAvatar = this.openAvatar.bind(this);
+        this.closeAvatar = this.closeAvatar.bind(this);
     }
 
     closeProfileEdit = () => {
@@ -32,65 +35,90 @@ export default class ProfilePage extends Component {
             profileDrawer: true
         });
     }
-    componentDidMount(){
-        console.log(this.props.profile.photo);
+
+    openAvatar = () => {
+        this.setState({
+            editAvatar: true,
+        });
     }
 
-
+    closeAvatar = () => {
+        this.setState({
+            editAvatar: false,
+        });
+    }
 
     render(){
         return(
-            <Layout>
+            <div>
+                {/*User Profile Row*/}
+                <Divider orientation="left"/>
+                <Row justify="center">
+                    <Col span={4}>
+                        <Tooltip placement="bottom" title="Click to Edit">
 
-                <Layout>
-                    <Sider theme={'light'}
-                           style={{textAlign:'center'}}
-                           width='25%'>
-                        <br/>
-                        <div>
-                            <Avatar
-                                icon={<UserOutlined/>}
-                                size={150}
-                                src={this.props.profile.photo}
-                            />
-                        </div>
-                        <br/>
-                        <div>
-                            <Descriptions title={this.props.profile.name} layout='vertical'>
-                                <Descriptions.Item label='User Name'>{this.props.profile.usrName}</Descriptions.Item>
-                                <Descriptions.Item label='Country'>{this.props.profile.location}</Descriptions.Item>
-                                <Descriptions.Item label='Skill Level'>{this.props.profile.skill}</Descriptions.Item>
-                                <Descriptions.Item label='Posts'>{this.props.profile.posts.length}</Descriptions.Item>
-                                <Descriptions.Item label='Following'>{this.props.profile.following}</Descriptions.Item>
-                                <Descriptions.Item label='Followers'>{this.props.profile.followers}</Descriptions.Item>
-                            </Descriptions>
-                            <Button type='primary'
-                                    onClick={this.openProfileEdit}>
+                                <Avatar
+                                    icon={<UserOutlined/>}
+                                    size={100}
+                                    src={this.props.photo}
+                                    onClick={this.openAvatar}
+                                >
+                                </Avatar>
+                        </Tooltip>
+                        <AvatarEditor editAvatar={this.state.editAvatar}/>
+                            <br/>
+                        <b style={{fontSize: '18px'}}>{this.props.name}</b>
+
+                    </Col>
+                    <Col span={14}>
+                        <br/><br/><br/>
+                        <Descriptions layout='horizontal' size='small'>
+                            <Descriptions.Item label='User Name'>{this.props.usrName}</Descriptions.Item>
+                            <Descriptions.Item label='Country'>{this.props.location}</Descriptions.Item>
+                            <Descriptions.Item label='Grade'>{this.props.skill}</Descriptions.Item>
+                            <Descriptions.Item label='Posts'>{this.props.posts.length}</Descriptions.Item>
+                            <Descriptions.Item label='Following'>{this.props.following.length}</Descriptions.Item>
+                            <Descriptions.Item label='Followers'>{this.props.followers.length}</Descriptions.Item>
+                        </Descriptions>
+                    </Col>
+                    {this.props.myProfile
+                        ? (<Col span={4}>
+                            <br/>
+                            <Button
+                                type="primary"
+                                onClick={this.openProfileEdit}>
                                 Edit Profile
                             </Button>
-                                <Drawer title={'Edit Profile'}
-                                        width={'30%'}
-                                        maskClosable={false}
-                                        placement={'left'}
-                                        onClose={this.closeProfileEdit}
-                                        visible={this.state.profileDrawer}>
-                                    <EditProfile/>
-                                </Drawer>
+                            <br/><br/>
+                            <Button
+                                type="primary"
+                                disabled>
+                                Edit Account
+                            </Button>
+                            <Drawer
+                                title="Edit Profile"
+                                width="30%"
+                                maskClosable={false}
+                                placement="right"
+                                onClose={this.closeProfileEdit}
+                                visible={this.state.profileDrawer}>
+                                <EditProfile
+                                    name={this.props.name}
+                                    usrName={this.props.usrName}
+                                    skill={this.props.skill}
+                                    photo={this.props.photo}
+                                    location={this.props.location}
+                                    closeProfileEdit={this.closeProfileEdit}
+                                    editUserProfile={this.props.editUserProfile}/>
+                            </Drawer>
+                        </Col>)
+                        : (<Col span={0}/>)
+                    }
+                </Row>
+                <Row>
 
-
-                        </div>
-                        <br/>
-                    </Sider>
-                    <Content>
-
-                        <p>My Posts?</p>
-                    </Content>
-                    <Sider theme={'light'}>
-                        My Grade distribution
-                    </Sider>
-                </Layout>
-
-            </Layout>
+                </Row>
+            </div>
 
         );
     }

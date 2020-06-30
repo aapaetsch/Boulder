@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import {signin, signInWithGoogle, signInWithGithub, signInWithFacebook} from "../helpers/auth";
 import 'antd/dist/antd.css';
-import styles from '../styles.css';
+import '../styles.css';
 import LoginForm from "../components/LoginForm";
 
 export default class Login extends Component{
@@ -74,8 +74,8 @@ export default class Login extends Component{
 
     render(){
         return (
-            <div className={styles.centerMe}>
-                <div style={{textAlign:'center'}}>
+            <div className='centerMe'>
+                <div >
                     <h1>Login to <Link to={'/'}>Boulders</Link></h1>
                     <p>
                         Fill in the form below to login to your account

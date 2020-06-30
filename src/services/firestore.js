@@ -17,8 +17,9 @@ export async function getUser(uid){
   });
 }
 
-export async function getUID(){
-
+export async function getUID(userName){
+    let docRef = (await db.collection('UserName').doc(userName).get()).data();
+    return await docRef.get();
 }
 
 export async function createUser(uid){
@@ -26,7 +27,6 @@ export async function createUser(uid){
     let name = auth().currentUser.displayName;
     let email = auth().currentUser.email;
     let usrName = email.split('@')[0];
-    console.log(uid);
 
     if (name === null){
         name = usrName;
@@ -37,29 +37,35 @@ export async function createUser(uid){
         usrName: usrName,
         location: 'undefined',
         creationDate: currentTime,
-        followers: 0,
-        following: 0,
+        followers: [],
+        following: [],
         photo: auth().currentUser.photoURL,
         skill: "V0 - V1",
         posts: [],
-        chatThreads: [],
     };
 
     return db.collection('Users').doc(uid.toString()).set(
         newProfile
-    ).then(function(){
+    )
+        .then(function(){
         console.log("Document successfully written!");
         return newProfile;
     }).catch(function(error){
-        console.log("Error writting document: ", error);
+        console.log("Error writing document: ", error);
         return false;
     })
 }
 
-export function updateUser(){
+export async function updateUserProfile(values, uid){
+    const userRef = db.collection('Users').doc(uid.toString());
+    return userRef.update({
+        name: values.name,
+        location: values.location,
+        usrName: values.usrName,
+        skill: values.skill})
+        .then( () => {return true;})
+        .catch(function (error) {
+            return false;
+            });
+}
 
-};
-
-export function deleteUser(){
-
-};

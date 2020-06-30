@@ -67,14 +67,16 @@ export default class App extends Component{
     render(){
 
         return this.state.loading === true ?
-            (<div className='loadingContainer'>
+            (<div className='centerMe' style={{backgroundImage:`url(${boulderProblem})`}}>
                 <h1>
                     <LoadingOutlined spin={true}/> Loading...
                 </h1>
 
             </div>)
             :(
-                <div style={{textAlign: 'center', backgroundImage:`url(${boulderProblem})`}}>
+
+
+                <div style={{textAlign: 'center',  height: '100vh',width:'100%'}}>
                     <Router>
                         <Switch>
                             <Route exact path='/' component={Landing}/>

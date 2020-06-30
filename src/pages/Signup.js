@@ -74,7 +74,7 @@ export default class SignUp extends Component{
     render(){
 
         return(
-            <div style={{textAlign: 'center'}}>
+            <div className='centerMe formatText'>
 
                 <h1>Sign Up to <Link to={'/'}>Boulders</Link> </h1>
                 <p>
